@@ -3,7 +3,7 @@ import {isNavigationCommand} from './navigation-commands';
 
 export class CanDeactivatePreviousStep {
   run(navigationInstruction: NavigationInstruction, next: Function) {
-    return processDeactivatable(navigationInstruction.plan, 'canDeactivate', next);
+    return processDeactivatable(navigationInstruction, 'canDeactivate', next);
   }
 }
 
@@ -15,7 +15,7 @@ export class CanActivateNextStep {
 
 export class DeactivatePreviousStep {
   run(navigationInstruction: NavigationInstruction, next: Function) {
-    return processDeactivatable(navigationInstruction.plan, 'deactivate', next, true);
+    return processDeactivatable(navigationInstruction, 'deactivate', next, true);
   }
 }
 
@@ -25,8 +25,8 @@ export class ActivateNextStep {
   }
 }
 
-function processDeactivatable(plan, callbackName, next, ignoreResult) {
-  let infos = findDeactivatable(plan, callbackName);
+function processDeactivatable(navigationInstruction: NavigationInstruction, callbackName, next, ignoreResult) {
+  let infos = findDeactivatable(navigationInstruction.plan, callbackName);
   let i = infos.length; //query from inside out
 
   function inspect(val) {
@@ -54,7 +54,9 @@ function processDeactivatable(plan, callbackName, next, ignoreResult) {
   return iterate();
 }
 
-function findDeactivatable(plan, callbackName, list: Array<Object> = []): Array<Object> {
+function findDeactivatable(navigationInstruction: NavigationInstruction, callbackName, list: Array<Object> = []): Array<Object> {
+  let plan = navigationInstruction.plan;
+
   for (let viewPortName in plan) {
     let viewPortPlan = plan[viewPortName];
     let prevComponent = viewPortPlan.prevComponent;
