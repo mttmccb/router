@@ -61,9 +61,7 @@ function findDeactivatable(navigationInstruction: NavigationInstruction, callbac
     let viewPortPlan = plan[viewPortName];
     let prevComponent = viewPortPlan.prevComponent;
 
-    if ((viewPortPlan.strategy === activationStrategy.invokeLifecycle ||
-        viewPortPlan.strategy === activationStrategy.replace) &&
-        prevComponent) {
+    if (isAlternativeStrategy(viewPortPlan.strategy) && prevComponent) {
       let viewModel = prevComponent.viewModel;
 
       if (callbackName in viewModel) {
@@ -141,7 +139,7 @@ function findActivatable(navigationInstruction: NavigationInstruction, callbackN
     let viewPortInstruction = navigationInstruction.viewPortInstructions[viewPortName];
     let viewModel = viewPortInstruction.component.viewModel;
 
-    if ((viewPortPlan.strategy === activationStrategy.invokeLifecycle || viewPortPlan.strategy === activationStrategy.replace) && callbackName in viewModel) {
+    if (isAlternativeStrategy(viewPortPlan.strategy) && callbackName in viewModel) {
       list.push({
         viewModel,
         lifecycleArgs: viewPortInstruction.lifecycleArgs,
@@ -255,4 +253,8 @@ function processPotential(obj, resolve, reject) {
   } catch (error) {
     return reject(error);
   }
+}
+
+function isAlternativeStrategy(strategy) {
+  return strategy === activationStrategy.invokeLifecycle || strategy === activationStrategy.replace;
 }
